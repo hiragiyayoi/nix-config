@@ -34,3 +34,16 @@ home-manager switch --flake ~/nix-config#user  # or pick a prior generation
 ## Notes
 - Host OS remains Debian; only the user environment is managed by Nix.
 - Channels: `nixos` -> nixos-26.05 (stable).
+
+## Per-project dev shells
+Copy `templates/dev-shell/` into a project, then:
+```sh
+cp -r ~/nix-config/templates/dev-shell /path/to/project
+cd /path/to/project
+direnv allow
+```
+The `.envrc` uses `use flake`, so entering the directory activates the dev shell automatically.
+
+## Maintenance
+- Automatic GC runs weekly (`nix.gc`), deleting generations older than 30 days.
+- Manual: `nix-collect-garbage -d` or `nix store gc`.
