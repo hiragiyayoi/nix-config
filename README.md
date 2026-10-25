@@ -55,7 +55,7 @@ All GitHub operations use `gh` (GitHub CLI), which is installed via Nix (`github
 ### Authenticate with GitHub
 
 ```sh
-gh auth login --git-protocol ssh --hostname github.com
+gh auth login --git-protocol https --hostname github.com
 ```
 
 This uses device flow: open the URL shown, enter the one-time code, and authorize. The SSH key at `~/.ssh/id_ed25519` is used automatically.
@@ -95,7 +95,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDsVKu7eywPtL2MtEsCouzedktaGqxOU/BVnEWCav3ko
 sh <(curl -L https://nixos.org/nix/install) --daemon
 
 # 2. Clone via gh and bootstrap
-gh auth login --git-protocol ssh
+gh auth login --git-protocol https
 gh repo clone <user>/nix-config ~/nix-config
 cd ~/nix-config
 ./scripts/bootstrap.sh <user>/nix-config [username]

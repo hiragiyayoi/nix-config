@@ -22,7 +22,7 @@ fi
 # --- ensure authenticated ---
 if ! gh auth status >/dev/null 2>&1; then
   echo "Not authenticated with GitHub. Starting gh auth login..."
-  gh auth login --git-protocol ssh --hostname github.com
+  gh auth login --git-protocol https --hostname github.com
 fi
 
 GH_USER="$(gh api user --jq .login)"
