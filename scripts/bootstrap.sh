@@ -25,14 +25,26 @@ if ! nix --version >/dev/null 2>&1; then
   exit 1
 fi
 
-# --- clone (if repo url provided) ---
+# --- clone (if repo url or gh shorthand provided) ---
 if [ -n "${REPO_URL}" ]; then
   if [ -d "${TARGET_DIR}/.git" ]; then
     echo "Repo already exists at ${TARGET_DIR}; pulling latest..."
     git -C "${TARGET_DIR}" pull --ff-only
   else
-    echo "Cloning ${REPO_URL} into ${TARGET_DIR}..."
-    git clone "${REPO_URL}" "${TARGET_DIR}"
+    # Support gh shorthand: "user/repo" or full URL
+    if [[ "${REPO_URL}" == */* && "${REPO_URL}" != http* && "${REPO_URL}" != git@* && "${REPO_URL}" != ssh://* ]]; then
+      # gh shorthand: owner/repo
+      if command -v gh >/dev/null 2>&1; then
+        echo "Cloning ${REPO_URL} via gh..."
+        gh repo clone "${REPO_URL}" "${TARGET_DIR}"
+      else
+        echo "Cloning ${REPO_URL} via git (gh not available)..."
+        git clone "https://github.com/${REPO_URL}.git" "${TARGET_DIR}"
+      fi
+    else
+      echo "Cloning ${REPO_URL} into ${TARGET_DIR}..."
+      git clone "${REPO_URL}" "${TARGET_DIR}"
+    fi
   fi
 fi
 
@@ -60,6 +72,11 @@ if [ -f "${NIX_CONF}" ]; then
 else
   echo "experimental-features = nix-command flakes" | sudo tee "${NIX_CONF}" >/dev/null
 fi
+
+# --- ensure gh is available (optional) ---
+  if command -v gh >/dev/null 2>&1; then
+    echo "gh available: $(gh --version | head -1)"
+  fi
 
 # --- apply ---
 echo "Running nix flake check..."

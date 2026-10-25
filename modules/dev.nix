@@ -32,6 +32,7 @@
 
     # VCS / tooling
     git
+    github-cli
     direnv
   ];
 }

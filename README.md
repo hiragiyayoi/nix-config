@@ -48,27 +48,44 @@ The `.envrc` uses `use flake`, so entering the directory activates the dev shell
 - Automatic GC runs weekly (`nix.gc`), deleting generations older than 30 days.
 - Manual: `nix-collect-garbage -d` or `nix store gc`.
 
-## GitHub management
+## GitHub management (via gh CLI)
 
-This repository is designed to be cloned and applied on other machines.
+All GitHub operations use `gh` (GitHub CLI), which is installed via Nix (`github-cli` in `modules/dev.nix`).
 
-### Push this repo to GitHub (one-time)
+### Authenticate with GitHub
 
-An SSH key has been generated on this machine (`~/.ssh/id_ed25519.pub`).
-Add the public key to GitHub: https://github.com/settings/keys
+```sh
+gh auth login --git-protocol ssh --hostname github.com
+```
 
-Then create an empty repository on GitHub and push:
+This uses device flow: open the URL shown, enter the one-time code, and authorize. The SSH key at `~/.ssh/id_ed25519` is used automatically.
+
+Check status:
+```sh
+gh auth status
+```
+
+### Push this repo to GitHub
 
 ```sh
 cd ~/nix-config
-./scripts/push-to-github.sh <your-github-username> [repo-name]
+./scripts/push-to-github.sh [repo-name] [public|private]
 ```
 
-Or manually:
+This script:
+1. Checks `gh` auth (runs `gh auth login` if needed)
+2. Creates the repo on GitHub if it doesn't exist (`gh repo create`)
+3. Pushes `main` branch
 
+Or manually with gh:
 ```sh
-git remote add origin git@github.com:<user>/nix-config.git
-git push -u origin main
+gh repo create nix-config --public --source=. --remote=origin --push
+```
+
+### SSH public key (this machine)
+
+```
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDsVKu7eywPtL2MtEsCouzedktaGqxOU/BVnEWCav3ko user@proxmoxmcp-dev
 ```
 
 ### Apply on another machine
@@ -77,13 +94,14 @@ git push -u origin main
 # 1. Install Nix (multi-user daemon) if not present
 sh <(curl -L https://nixos.org/nix/install) --daemon
 
-# 2. Clone and bootstrap
-git clone git@github.com:<user>/nix-config.git ~/nix-config
+# 2. Clone via gh and bootstrap
+gh auth login --git-protocol ssh
+gh repo clone <user>/nix-config ~/nix-config
 cd ~/nix-config
-./scripts/bootstrap.sh git@github.com:<user>/nix-config.git [username]
+./scripts/bootstrap.sh <user>/nix-config [username]
 ```
 
-The bootstrap script handles Nix flakes, username adjustment, and home-manager switch.
+The bootstrap script supports gh shorthand (`user/repo`), full URLs, and SSH URLs.
 
 ### SSH public key (this machine)
 
