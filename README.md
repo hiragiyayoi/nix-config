@@ -47,3 +47,46 @@ The `.envrc` uses `use flake`, so entering the directory activates the dev shell
 ## Maintenance
 - Automatic GC runs weekly (`nix.gc`), deleting generations older than 30 days.
 - Manual: `nix-collect-garbage -d` or `nix store gc`.
+
+## GitHub management
+
+This repository is designed to be cloned and applied on other machines.
+
+### Push this repo to GitHub (one-time)
+
+An SSH key has been generated on this machine (`~/.ssh/id_ed25519.pub`).
+Add the public key to GitHub: https://github.com/settings/keys
+
+Then create an empty repository on GitHub and push:
+
+```sh
+cd ~/nix-config
+./scripts/push-to-github.sh <your-github-username> [repo-name]
+```
+
+Or manually:
+
+```sh
+git remote add origin git@github.com:<user>/nix-config.git
+git push -u origin main
+```
+
+### Apply on another machine
+
+```sh
+# 1. Install Nix (multi-user daemon) if not present
+sh <(curl -L https://nixos.org/nix/install) --daemon
+
+# 2. Clone and bootstrap
+git clone git@github.com:<user>/nix-config.git ~/nix-config
+cd ~/nix-config
+./scripts/bootstrap.sh git@github.com:<user>/nix-config.git [username]
+```
+
+The bootstrap script handles Nix flakes, username adjustment, and home-manager switch.
+
+### SSH public key (this machine)
+
+```
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDsVKu7eywPtL2MtEsCouzedktaGqxOU/BVnEWCav3ko user@proxmoxmcp-dev
+```

@@ -1,0 +1,19 @@
+# Nix / home-manager
+.direnv/
+result
+result-*
+flake.lock.bak
+
+# Editor / OS
+.vscode/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Secrets
+*.key
+*.pem
+id_rsa*
+id_ed25519*
+!*.pub

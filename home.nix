@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, username ? "user", ... }:
 
 {
   imports = [
@@ -9,8 +9,8 @@
     ./modules/nix.nix
   ];
 
-  home.username = "user";
-  home.homeDirectory = "/home/user";
+  home.username = username;
+  home.homeDirectory = "/home/${username}";
   home.stateVersion = "26.05";
 
   # Let home-manager manage itself

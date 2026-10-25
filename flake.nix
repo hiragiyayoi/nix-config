@@ -1,5 +1,5 @@
 {
-  description = "Declarative home environment for user (Nix + home-manager)";
+  description = "Declarative home environment (Nix + home-manager)";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
@@ -12,11 +12,14 @@
   outputs = { self, nixpkgs, home-manager, ... }:
     let
       system = "x86_64-linux";
+      # Change this to your username on the target machine.
+      username = "user";
       pkgs = nixpkgs.legacyPackages.${system};
     in {
-      homeConfigurations."user" = home-manager.lib.homeManagerConfiguration {
+      homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         modules = [ ./home.nix ];
+        extraSpecialArgs = { inherit username; };
       };
     };
 }
